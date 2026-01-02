@@ -106,3 +106,54 @@ fun HomeStatus(
     }
 }
 
+@Composable
+fun OnLoading(modifier: Modifier = Modifier) {
+    Image(
+        modifier = modifier.size(200.dp),
+        painter = painterResource(R.drawable.loading_img),
+        contentDescription = stringResource(R.string.loading)
+    )
+}
+
+@Composable
+fun OnError(retryAction: () -> Unit, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.loading_img),
+            contentDescription = ""
+        )
+        Text(text = stringResource(R.string.loading), modifier = Modifier.padding(16.dp))
+        Button(onClick = retryAction) {
+            Text(stringResource(R.string.retry))
+        }
+    }
+}
+
+@Composable
+fun SiswaLayout(
+    siswa: List<Siswa>,
+    modifier: Modifier = Modifier,
+    onDetailClick: (Siswa) -> Unit,
+    onDeleteClick: (Siswa) -> Unit = {}
+) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(dimensionResource(R.dimen.padding_small)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+    ) {
+        items(siswa) { siswa ->
+            SiswaCard(
+                siswa = siswa,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onDetailClick(siswa) },
+                onDeleteClick = { onDeleteClick(siswa) }
+            )
+        }
+    }
+}
+
