@@ -29,3 +29,25 @@ class FirebaseRepositorySiswa : RepositorySiswa {
             emptyList()
         }
     }
+    override suspend fun postDataSiswa(siswa: Siswa) {
+        val docRef = if (siswa.id.isEmpty()) collection.document() else collection.document(siswa.id)
+
+        val data = hashMapOf(
+            "id" to docRef.id, // Menyimpan document ID yang asli (String)
+            "nama" to siswa.nama,
+            "alamat" to siswa.alamat,
+            "telpon" to siswa.telpon
+        )
+
+        docRef.set(data).await()
+    }
+
+    // Implementasi delete (opsional, tapi dibutuhkan oleh HalamanHome yang tadi disalin)
+    override suspend fun deleteSiswa(siswa: Siswa) {
+        try {
+            collection.document(siswa.id).delete().await()
+        } catch (e: Exception) {
+            throw Exception("Gagal menghapus data siswa: ${e.message}")
+        }
+    }
+}
