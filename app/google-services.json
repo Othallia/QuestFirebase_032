@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "733077704740",
+    "project_id": "fir-ece4b",
+    "storage_bucket": "fir-ece4b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:733077704740:android:f3f76aeff071ee9c2e88b1",
+        "android_client_info": {
+          "package_name": "com.example.questfirebase_032"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBt1qsuGaGFjhNjLrB5KNpeGYQSuL6uOq0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
