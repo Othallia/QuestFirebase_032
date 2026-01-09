@@ -47,14 +47,16 @@ import com.example.questfirebase_032.viewmodel.PenyediaViewModel
 @Composable
 fun HomeScreen(
     navigateToItemEntry: () -> Unit,
+    navigateToItemUpdate: (String) -> Unit, // PERBAIKAN: Nama parameter disesuaikan dengan PetaNavigasi
+
     modifier: Modifier = Modifier,
-    onDetailClick: (String) -> Unit = {},
     viewModel: HomeViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
+            // Pastikan SiswaTopAppBar sudah diimport atau dibuat
             SiswaTopAppBar(
                 title = stringResource(DestinasiHome.titleRes),
                 canNavigateBack = false,
@@ -78,7 +80,7 @@ fun HomeScreen(
             homeUiState = viewModel.homeUiState,
             retryAction = { viewModel.getSiswa() },
             modifier = Modifier.padding(innerPadding),
-            onDetailClick = onDetailClick,
+            onDetailClick = navigateToItemUpdate, // Sambungkan ke parameter baru
             onDeleteClick = {
                 viewModel.deleteSiswa(it)
             }
@@ -99,6 +101,7 @@ fun HomeStatus(
         is HomeUiState.Success -> SiswaLayout(
             siswa = homeUiState.siswa,
             modifier = modifier.fillMaxWidth(),
+            // Mengambil ID siswa untuk dikirim ke layar update
             onDetailClick = { onDetailClick(it.id) },
             onDeleteClick = { onDeleteClick(it) }
         )
