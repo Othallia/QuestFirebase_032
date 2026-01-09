@@ -17,3 +17,18 @@ sealed interface DetailUiState {
     object Loading : DetailUiState
 }
 
+class DetailViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val repositorySiswa: RepositorySiswa
+) : ViewModel() {
+
+    // PERBAIKAN DI SINI: Gunakan DestinasiDetail.itemIdArg
+    private val idSiswa: String = checkNotNull(savedStateHandle[DestinasiDetail.itemIdArg])
+
+    var detailUiState: DetailUiState by mutableStateOf(DetailUiState.Loading)
+        private set
+
+    init {
+        getSatuSiswa()
+    }
+
