@@ -48,3 +48,14 @@ class DetailViewModel(
         }
     }
 
+    fun hapusSatuSiswa() {
+        viewModelScope.launch {
+            try {
+                repositorySiswa.hapusSatuSiswa(idSiswa)
+            } catch (e: Exception) {
+                println("Gagal menghapus: ${e.message}")
+            }
+        }
+    }
+}
+
