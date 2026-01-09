@@ -40,7 +40,8 @@ class HomeViewModel(private val repositorySiswa: RepositorySiswa) : ViewModel() 
     fun deleteSiswa(siswa: Siswa) {
         viewModelScope.launch {
             try {
-                repositorySiswa.deleteSiswa(siswa)
+                // Gunakan hapusSatuSiswa dan ambil ID-nya saja
+                repositorySiswa.hapusSatuSiswa(siswa.id)
                 getSiswa()
             } catch (e: Exception) {
                 homeUiState = HomeUiState.Error
