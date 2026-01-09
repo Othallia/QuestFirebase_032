@@ -7,8 +7,9 @@ import kotlinx.coroutines.tasks.await
 interface RepositorySiswa {
     suspend fun getDataSiswa(): List<Siswa>
     suspend fun postDataSiswa(siswa: Siswa)
-    // Tambahkan fungsi delete jika diperlukan untuk fitur hapus di Home
-    suspend fun deleteSiswa(siswa: Siswa)
+    suspend fun getSatuSiswa(id: String): Siswa? // Ubah Long ke String
+    suspend fun editSatuSiswa(id: String, siswa: Siswa) // Ubah Long ke String
+    suspend fun hapusSatuSiswa(id: String) // Ubah Long ke String
 }
 
 class FirebaseRepositorySiswa : RepositorySiswa {
@@ -19,7 +20,8 @@ class FirebaseRepositorySiswa : RepositorySiswa {
         return try {
             collection.get().await().documents.map { doc ->
                 Siswa(
-                    id = doc.getString("id") ?: "", // Mengambil id sebagai String
+                    // Pastikan id diambil sebagai String
+                    id = doc.getString("id") ?: "",
                     nama = doc.getString("nama") ?: "",
                     alamat = doc.getString("alamat") ?: "",
                     telpon = doc.getString("telpon") ?: ""
@@ -29,25 +31,59 @@ class FirebaseRepositorySiswa : RepositorySiswa {
             emptyList()
         }
     }
+
     override suspend fun postDataSiswa(siswa: Siswa) {
+        // Logic baru: Jika ID kosong, buat ID baru dari Firestore. Jika ada, pakai yang lama.
         val docRef = if (siswa.id.isEmpty()) collection.document() else collection.document(siswa.id)
 
+        // ID yang akan disimpan adalah ID dari docRef (unik string)
+        val siswaId = if (siswa.id.isEmpty()) docRef.id else siswa.id
+
         val data = hashMapOf(
-            "id" to docRef.id, // Menyimpan document ID yang asli (String)
+            "id" to siswaId,
             "nama" to siswa.nama,
             "alamat" to siswa.alamat,
             "telpon" to siswa.telpon
         )
-
+        // Gunakan set agar ID dokumen di firestore sama dengan ID di dalam field datanya
         docRef.set(data).await()
     }
 
-    // Implementasi delete (opsional, tapi dibutuhkan oleh HalamanHome yang tadi disalin)
-    override suspend fun deleteSiswa(siswa: Siswa) {
-        try {
-            collection.document(siswa.id).delete().await()
+    override suspend fun getSatuSiswa(id: String): Siswa? { // Parameter jadi String
+        return try {
+            val query = collection.whereEqualTo("id", id).get().await()
+            query.documents.firstOrNull()?.let { doc ->
+                Siswa(
+                    // Konsisten ambil String
+                    id = doc.getString("id") ?: "",
+                    nama = doc.getString("nama") ?: "",
+                    alamat = doc.getString("alamat") ?: "",
+                    telpon = doc.getString("telpon") ?: ""
+                )
+            }
         } catch (e: Exception) {
-            throw Exception("Gagal menghapus data siswa: ${e.message}")
+            println("Gagal baca data siswa : ${e.message}")
+            null
         }
+    }
+
+    override suspend fun editSatuSiswa(id: String, siswa: Siswa) { // Parameter jadi String
+        val docQuery = collection.whereEqualTo("id", id).get().await()
+        val docId = docQuery.documents.firstOrNull()?.id ?: return
+
+        collection.document(docId).set(
+            mapOf(
+                "id" to id, // Pastikan ID tetap konsisten
+                "nama" to siswa.nama,
+                "alamat" to siswa.alamat,
+                "telpon" to siswa.telpon
+            )
+        ).await()
+    }
+
+    override suspend fun hapusSatuSiswa(id: String) { // Parameter jadi String
+        val docQuery = collection.whereEqualTo("id", id).get().await()
+        val docId = docQuery.documents.firstOrNull()?.id ?: return
+        collection.document(docId).delete().await()
     }
 }
