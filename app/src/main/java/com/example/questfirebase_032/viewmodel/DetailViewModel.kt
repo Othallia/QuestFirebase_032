@@ -32,3 +32,19 @@ class DetailViewModel(
         getSatuSiswa()
     }
 
+    fun getSatuSiswa() {
+        viewModelScope.launch {
+            detailUiState = DetailUiState.Loading
+            detailUiState = try {
+                val siswa = repositorySiswa.getSatuSiswa(idSiswa)
+                if (siswa != null) {
+                    DetailUiState.Success(siswa)
+                } else {
+                    DetailUiState.Error
+                }
+            } catch (e: Exception) {
+                DetailUiState.Error
+            }
+        }
+    }
+
